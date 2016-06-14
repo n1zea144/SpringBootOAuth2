@@ -28,6 +28,12 @@ import javax.servlet.*;
         @Autowired
         OAuth2ClientContext oauth2ClientContext;
 
+        @Autowired
+        OAuth2ProtectedResourceDetails googleUserDetails;
+
+        @Autowired
+        ResourceServerProperties googleResource;
+
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http
@@ -49,9 +55,9 @@ import javax.servlet.*;
             List<Filter> filters = new ArrayList<>();
 
             OAuth2ClientAuthenticationProcessingFilter googleFilter = new OAuth2ClientAuthenticationProcessingFilter("/login/google");
-            OAuth2RestTemplate googleTemplate = new OAuth2RestTemplate(google(), oauth2ClientContext);
+            OAuth2RestTemplate googleTemplate = new OAuth2RestTemplate(googleUserDetails, oauth2ClientContext);
             googleFilter.setRestTemplate(googleTemplate);
-            googleFilter.setTokenServices(new CustomUserInfoTokenServices(googleResource().getUserInfoUri(), google().getClientId()));
+            googleFilter.setTokenServices(new CustomUserInfoTokenServices(googleResource.getUserInfoUri(), googleUserDetails.getClientId()));
             filters.add(googleFilter);
 
             filter.setFilters(filters);
@@ -62,7 +68,7 @@ import javax.servlet.*;
         * The @Bean annotation tells Spring that a method will return an object that should be
         * registered as a bean in the Spring application context( in this case the OAuth2ClientContext)
         */
-
+      /*
         @Bean
         @ConfigurationProperties("google.client")
         OAuth2ProtectedResourceDetails google(){ return new AuthorizationCodeResourceDetails(); }
@@ -70,6 +76,7 @@ import javax.servlet.*;
         @Bean
         @ConfigurationProperties("google.resource")
         ResourceServerProperties googleResource(){ return new ResourceServerProperties(); }
+      */
 
         @Bean
         public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
